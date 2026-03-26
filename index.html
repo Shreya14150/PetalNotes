@@ -1,1 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petal Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #FF8FAB;
+    --pink-light: #FFB3C6;
+    --pink-pale: #FFF0F5;
+    --lavender: #C9B8FF;
+    --lavender-light: #E8E0FF;
+    --mint: #B5EAD7;
+    --peach: #FFD7BA;
+    --yellow: #FFF4A3;
+    --sky: #B8E4FF;
+    --white: #FFFCFE;
+    --text: #5C4A6E;
+    --text-light: #8B7BA0;
+    --shadow: rgba(200,150,190,0.25);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #FFF0F9 0%, #F0EAFF 40%, #E8F8F0 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(60px);
+    opacity: 0.35; pointer-events: none; z-index: 0;
+    animation: blobFloat 8s ease-in-out infinite;
+  }
+  .blob1 { width:350px; height:350px; background:var(--pink-light); top:-80px; left:-80px; animation-delay:0s; }
+  .blob2 { width:280px; height:280px; background:var(--lavender); top:30%; right:-60px; animation-delay:2s; }
+  .blob3 { width:320px; height:320px; background:var(--mint); bottom:-60px; left:30%; animation-delay:4s; }
+  @keyframes blobFloat {
+    0%,100% { transform:translateY(0) scale(1); }
+    50% { transform:translateY(-20px) scale(1.05); }
+  }
+  .sparkle {
+    position:fixed; pointer-events:none; z-index:0; font-size:18px;
+    animation:sparkleDrift linear infinite; opacity:0;
+  }
+  @keyframes sparkleDrift {
+    0% { transform:translateY(100vh) rotate(0deg); opacity:0; }
+    10% { opacity:0.7; } 90% { opacity:0.7; }
+    100% { transform:translateY(-100px) rotate(360deg); opacity:0; }
+  }
+  .app { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 20px; }
+  header { text-align:center; margin-bottom:30px; animation:fadeDown 0.6s ease both; }
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .logo {
+    font-family:'Pacifico',cursive; font-size:42px;
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text; filter:drop-shadow(0 2px 8px rgba(200,150,200,0.4));
+    display:inline-block; animation:logoPop 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes logoPop {
+    from { transform:scale(0.5) rotate(-5deg); opacity:0; }
+    to { transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .subtitle { font-size:14px; color:var(--text-light); margin-top:4px; letter-spacing:1px; }
+  .toolbar { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; animation:fadeUp 0.6s 0.2s ease both; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .search-wrap { flex:1; min-width:200px; position:relative; }
+  .search-wrap input {
+    width:100%; padding:12px 20px 12px 44px; border:2.5px solid transparent;
+    border-radius:50px; background:white; font-family:'Nunito',sans-serif;
+    font-size:14px; color:var(--text); box-shadow:0 4px 20px var(--shadow);
+    transition:all 0.3s; outline:none;
+  }
+  .search-wrap input:focus { border-color:var(--pink-light); box-shadow:0 4px 24px rgba(255,143,171,0.3); }
+  .search-icon { position:absolute; left:16px; top:50%; transform:translateY(-50%); font-size:16px; pointer-events:none; }
+  .filter-btns { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .filter-btn {
+    padding:10px 18px; border:none; border-radius:50px;
+    font-family:'Nunito',sans-serif; font-size:13px; font-weight:700;
+    cursor:pointer; transition:all 0.25s; background:white;
+    color:var(--text-light); box-shadow:0 3px 12px var(--shadow);
+  }
+  .filter-btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px var(--shadow); }
+  .filter-btn.active { background:linear-gradient(135deg,var(--pink),var(--lavender)); color:white; }
+  .add-btn {
+    padding:12px 24px; border:none; border-radius:50px;
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    color:white; font-family:'Nunito',sans-serif; font-size:15px; font-weight:800;
+    cursor:pointer; box-shadow:0 4px 20px rgba(200,140,200,0.4);
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap;
+  }
+  .add-btn:hover { transform:scale(1.07) translateY(-2px); box-shadow:0 8px 28px rgba(200,140,200,0.5); }
+  .add-btn:active { transform:scale(0.97); }
+  .stats-bar { display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap; animation:fadeUp 0.6s 0.15s ease both; }
+  .stat-pill {
+    padding:8px 18px; border-radius:50px; background:white;
+    box-shadow:0 3px 12px var(--shadow); font-size:13px; font-weight:700;
+    color:var(--text); display:flex; align-items:center; gap:6px;
+  }
+  .stat-pill span { font-size:16px; }
+  .notes-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; animation:fadeUp 0.6s 0.3s ease both; }
+  .note-card {
+    border-radius:24px; padding:20px; position:relative;
+    box-shadow:0 4px 20px var(--shadow);
+    transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    cursor:pointer; animation:cardPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; overflow:hidden;
+  }
+  @keyframes cardPop {
+    from { transform:scale(0.8) rotate(-3deg); opacity:0; }
+    to { transform:scale(1) rotate(0deg); opacity:1; }
+  }
+  .note-card:hover { transform:translateY(-6px) scale(1.02); box-shadow:0 12px 35px var(--shadow); }
+  .note-card::before {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.35);
+  }
+  .note-tag {
+    display:inline-block; padding:4px 12px; border-radius:50px;
+    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;
+    background:rgba(255,255,255,0.6); color:var(--text); margin-bottom:10px;
+  }
+  .note-title { font-size:17px; font-weight:800; color:var(--text); margin-bottom:8px; line-height:1.3; word-break:break-word; }
+  .note-body { font-size:13.5px; color:var(--text); opacity:0.8; line-height:1.6; max-height:80px; overflow:hidden; word-break:break-word; }
+  .note-footer { margin-top:14px; display:flex; justify-content:space-between; align-items:center; }
+  .note-date { font-size:11px; opacity:0.6; font-weight:600; }
+  .note-actions { display:flex; gap:6px; opacity:0; transition:opacity 0.2s; }
+  .note-card:hover .note-actions { opacity:1; }
+  .action-btn {
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:rgba(255,255,255,0.7); cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  }
+  .action-btn:hover { transform:scale(1.2); background:white; }
+  .del-btn:hover svg { stroke: #FF8FAB; }
+  .pin-btn:hover svg { stroke: #FF8FAB; fill: #FF8FAB; }
+  .pin-indicator { position:absolute; top:14px; right:16px; font-size:16px; opacity:0.7; }
+  .color-pink { background:linear-gradient(135deg,#FFD6E7,#FFF0F5); }
+  .color-lavender { background:linear-gradient(135deg,#E8E0FF,#F5F0FF); }
+  .color-mint { background:linear-gradient(135deg,#C8F5E5,#E8FAF3); }
+  .color-peach { background:linear-gradient(135deg,#FFE5CC,#FFF5EA); }
+  .color-yellow { background:linear-gradient(135deg,#FFF5CC,#FFFBEA); }
+  .color-sky { background:linear-gradient(135deg,#CCE8FF,#EAF5FF); }
+  .overlay {
+    position:fixed; inset:0; background:rgba(180,140,200,0.3);
+    backdrop-filter:blur(8px); z-index:100;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    opacity:0; pointer-events:none; transition:opacity 0.3s;
+  }
+  .overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:white; border-radius:28px; padding:30px;
+    width:100%; max-width:520px;
+    box-shadow:0 20px 60px rgba(200,140,200,0.35);
+    transform:scale(0.85) translateY(30px);
+    transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    max-height:90vh; overflow-y:auto;
+  }
+  .overlay.open .modal { transform:scale(1) translateY(0); }
+  .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .modal-title {
+    font-family:'Pacifico',cursive; font-size:22px;
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .close-btn {
+    width:36px; height:36px; border:none; border-radius:50%;
+    background:var(--pink-pale); color:var(--pink); font-size:18px;
+    cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; font-weight:bold;
+  }
+  .close-btn:hover { background:var(--pink); color:white; transform:rotate(90deg); }
+  .modal input[type="text"], .modal textarea {
+    width:100%; border:2.5px solid #F0EAF8; border-radius:16px;
+    padding:13px 16px; font-family:'Nunito',sans-serif; font-size:15px;
+    color:var(--text); outline:none; transition:border-color 0.3s,box-shadow 0.3s;
+    resize:none; background:#FFFCFE; margin-bottom:14px; display:block;
+  }
+  .modal input[type="text"]:focus, .modal textarea:focus {
+    border-color:var(--pink-light); box-shadow:0 0 0 4px rgba(255,179,198,0.2);
+  }
+  .modal textarea { height:140px; }
+  .modal label {
+    font-size:12px; font-weight:800; text-transform:uppercase;
+    letter-spacing:1px; color:var(--text-light); display:block; margin-bottom:6px;
+  }
+  .color-picker { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .color-dot {
+    width:32px; height:32px; border-radius:50%; cursor:pointer;
+    border:3px solid transparent; transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .color-dot:hover { transform:scale(1.2); }
+  .color-dot.selected { border-color:var(--text); transform:scale(1.15); }
+  .dot-pink { background:linear-gradient(135deg,#FFD6E7,#FFB3C6); }
+  .dot-lavender { background:linear-gradient(135deg,#E8E0FF,#C9B8FF); }
+  .dot-mint { background:linear-gradient(135deg,#C8F5E5,#B5EAD7); }
+  .dot-peach { background:linear-gradient(135deg,#FFE5CC,#FFD7BA); }
+  .dot-yellow { background:linear-gradient(135deg,#FFF5CC,#FFF4A3); }
+  .dot-sky { background:linear-gradient(135deg,#CCE8FF,#B8E4FF); }
+  .tag-select { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .tag-option {
+    padding:6px 14px; border-radius:50px; border:2px solid #F0EAF8; background:white;
+    font-family:'Nunito',sans-serif; font-size:12px; font-weight:700;
+    cursor:pointer; transition:all 0.2s; color:var(--text-light);
+  }
+  .tag-option:hover { border-color:var(--pink-light); }
+  .tag-option.selected { background:linear-gradient(135deg,var(--pink),var(--lavender)); color:white; border-color:transparent; }
+  .modal-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .modal-row input[type="checkbox"] { width:20px; height:20px; accent-color:var(--pink); cursor:pointer; margin-bottom:0; }
+  .modal-row span { font-size:14px; font-weight:600; }
+  .save-btn {
+    width:100%; padding:14px; border:none; border-radius:50px;
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    color:white; font-family:'Nunito',sans-serif; font-size:16px; font-weight:800;
+    cursor:pointer; transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow:0 4px 20px rgba(200,140,200,0.4);
+  }
+  .save-btn:hover { transform:scale(1.03); box-shadow:0 8px 28px rgba(200,140,200,0.5); }
+  .empty-state { text-align:center; padding:60px 20px; grid-column:1/-1; }
+  .empty-emoji { font-size:64px; animation:bounce 2s ease-in-out infinite; }
+  @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+  .empty-text { font-size:18px; color:var(--text-light); margin-top:16px; font-weight:700; }
+  .toast {
+    position:fixed; bottom:30px; left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    color:white; padding:12px 28px; border-radius:50px;
+    font-weight:700; font-size:14px; box-shadow:0 8px 28px rgba(200,140,200,0.45);
+    z-index:999; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--pink-light); border-radius:10px; }
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div id="sparkles"></div>
 
+<div class="app">
+  <header>
+    <div class="logo">&#10035; Petal Notes</div>
+    <div class="subtitle">your little cozy corner &#127800;</div>
+  </header>
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search your notes..." oninput="renderNotes()">
+    </div>
+    <div class="filter-btns">
+      <button class="filter-btn active" onclick="setFilter('all',this)">&#127800; All</button>
+      <button class="filter-btn" onclick="setFilter('pinned',this)">&#128204; Pinned</button>
+      <button class="filter-btn" onclick="setFilter('personal',this)">&#129419; Personal</button>
+      <button class="filter-btn" onclick="setFilter('work',this)">&#128188; Work</button>
+      <button class="filter-btn" onclick="setFilter('ideas',this)">&#128161; Ideas</button>
+      <button class="filter-btn" onclick="setFilter('study',this)">&#128218; Study</button>
+    </div>
+    <button class="add-btn" onclick="openModal()">&#10024; New Note</button>
+  </div>
+  <div class="notes-grid" id="notesGrid"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">New Note &#10024;</div>
+      <button class="close-btn" onclick="closeModal()">&#215;</button>
+    </div>
+    <label>Title</label>
+    <input type="text" id="noteTitle" placeholder="Give it a cute title... &#127799;">
+    <label>Your thoughts</label>
+    <textarea id="noteBody" placeholder="Write anything your heart desires... &#9729;"></textarea>
+    <label>Pick a color &#127912;</label>
+    <div class="color-picker">
+      <div class="color-dot dot-pink selected" data-color="pink" onclick="selectColor('pink',this)"></div>
+      <div class="color-dot dot-lavender" data-color="lavender" onclick="selectColor('lavender',this)"></div>
+      <div class="color-dot dot-mint" data-color="mint" onclick="selectColor('mint',this)"></div>
+      <div class="color-dot dot-peach" data-color="peach" onclick="selectColor('peach',this)"></div>
+      <div class="color-dot dot-yellow" data-color="yellow" onclick="selectColor('yellow',this)"></div>
+      <div class="color-dot dot-sky" data-color="sky" onclick="selectColor('sky',this)"></div>
+    </div>
+    <label>Tag it &#127991;</label>
+    <div class="tag-select">
+      <button class="tag-option" data-tag="personal" onclick="selectTag('personal',this)">&#129419; Personal</button>
+      <button class="tag-option" data-tag="work" onclick="selectTag('work',this)">&#128188; Work</button>
+      <button class="tag-option" data-tag="ideas" onclick="selectTag('ideas',this)">&#128161; Ideas</button>
+      <button class="tag-option" data-tag="study" onclick="selectTag('study',this)">&#128218; Study</button>
+      <button class="tag-option" data-tag="misc" onclick="selectTag('misc',this)">&#127752; Misc</button>
+    </div>
+    <div class="modal-row">
+      <input type="checkbox" id="pinCheck">
+      <span>&#128204; Pin this note to top</span>
+    </div>
+    <button class="save-btn" onclick="saveNote()">Save Note &#128150;</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var notes = JSON.parse(localStorage.getItem('petalNotes') || '[]');
+var currentFilter = 'all';
+var editingId = null;
+var selectedColor = 'pink';
+var selectedTag = null;
+
+var emojis = ['*','@','~','!','+','o','x','^'];
+var emojisFull = ['\u273F','\u1F338','\u2B50','\u1F4AB','\u1F337','\u1F98B','\u2728','\u1F33A','\u1F495','\u1F380','\u1F36C','\u1F308'];
+var sc = document.getElementById('sparkles');
+var sparkEmojis = ['\u273F','\u2728','\u1F338','\u2B50','\u1F337','\u1F98B','\u1F33A','\u1F495','\u1F380'];
+for(var i=0;i<12;i++){
+  var s=document.createElement('div');
+  s.className='sparkle';
+  s.textContent=sparkEmojis[Math.floor(Math.random()*sparkEmojis.length)];
+  s.style.left=(Math.random()*100)+'vw';
+  s.style.animationDuration=(12+Math.random()*15)+'s';
+  s.style.animationDelay=(Math.random()*15)+'s';
+  s.style.fontSize=(14+Math.random()*14)+'px';
+  sc.appendChild(s);
+}
+
+function save(){ localStorage.setItem('petalNotes',JSON.stringify(notes)); }
+
+function tagEmoji(tag){
+  var m={personal:'\u1F98B',work:'\u1F4BC',ideas:'\u1F4A1',study:'\u1F4DA',misc:'\u1F308'};
+  return m[tag]||'';
+}
+
+function escHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatDate(ts){
+  var d=new Date(ts);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function renderNotes(){
+  var grid=document.getElementById('notesGrid');
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  var filtered=notes.filter(function(n){
+    var mf=currentFilter==='all'||(currentFilter==='pinned'&&n.pinned)||n.tag===currentFilter;
+    var ms=!q||n.title.toLowerCase().includes(q)||n.body.toLowerCase().includes(q);
+    return mf&&ms;
+  });
+  filtered.sort(function(a,b){return(b.pinned?1:0)-(a.pinned?1:0);});
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty-state"><div class="empty-emoji">\u1F338</div><div class="empty-text">No notes here yet~<br>Add something cute! \u2728</div></div>';
+    updateStats(); return;
+  }
+  grid.innerHTML=filtered.map(function(n,i){
+    return '<div class="note-card color-'+n.color+'" style="animation-delay:'+(i*0.06)+'s" onclick="editNote(\''+n.id+'\')">'
+      +(n.pinned?'<div class="pin-indicator"><svg width="14" height="14" viewBox="0 0 24 24" fill="#FF8FAB" xmlns="http://www.w3.org/2000/svg"><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/><line x1="12" y1="17" x2="12" y2="22" stroke="#FF8FAB" stroke-width="2"/></svg></div>':'')
+      +(n.tag?'<div class="note-tag">'+tagEmoji(n.tag)+' '+n.tag+'</div>':'')
+      +'<div class="note-title">'+(escHtml(n.title)||'Untitled \u2728')+'</div>'
+      +'<div class="note-body">'+escHtml(n.body)+'</div>'
+      +'<div class="note-footer">'
+      +'<span class="note-date">'+formatDate(n.date)+'</span>'
+      +'<div class="note-actions" onclick="event.stopPropagation()">'
+      +'<button class="action-btn pin-btn" title="'+(n.pinned?'Unpin':'Pin')+'" onclick="togglePin(\''+n.id+'\')">'+(n.pinned?'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"#FF8FAB\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z\"/></svg>':'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8B7BA0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"22\"/><path d=\"M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z\"/></svg>')+'</button>'
+      +'<button class="action-btn del-btn" title="Delete" onclick="deleteNote(\''+n.id+'\')">'+'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8B7BA0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\"><polyline points=\"3 6 5 6 21 6\"/><path d=\"M19 6l-1 14H6L5 6\"/><path d=\"M10 11v6\"/><path d=\"M14 11v6\"/><path d=\"M9 6V4h6v2\"/></svg>'+'</button>'
+      +'</div></div></div>';
+  }).join('');
+  updateStats();
+}
+
+function updateStats(){
+  var pinned=notes.filter(function(n){return n.pinned;}).length;
+  document.getElementById('statsBar').innerHTML=
+    '<div class="stat-pill"><span>\u1F4DD</span>'+notes.length+' notes</div>'
+    +'<div class="stat-pill"><span>\u1F4CC</span>'+pinned+' pinned</div>';
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderNotes();
+}
+
+function openModal(id){
+  editingId=id||null;
+  var overlay=document.getElementById('overlay');
+  if(id){
+    var n=notes.find(function(x){return x.id===id;});
+    document.getElementById('modalTitle').textContent='Edit Note \u1F337';
+    document.getElementById('noteTitle').value=n.title;
+    document.getElementById('noteBody').value=n.body;
+    document.getElementById('pinCheck').checked=n.pinned;
+    selectColor(n.color,document.querySelector('.dot-'+n.color));
+    if(n.tag) selectTag(n.tag,document.querySelector('[data-tag="'+n.tag+'"]'));
+    else{ selectedTag=null; document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');}); }
+  } else {
+    document.getElementById('modalTitle').textContent='New Note \u2728';
+    document.getElementById('noteTitle').value='';
+    document.getElementById('noteBody').value='';
+    document.getElementById('pinCheck').checked=false;
+    selectColor('pink',document.querySelector('.dot-pink'));
+    selectedTag=null;
+    document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');});
+  }
+  overlay.classList.add('open');
+  setTimeout(function(){document.getElementById('noteTitle').focus();},300);
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  editingId=null;
+}
+
+function handleOverlayClick(e){
+  if(e.target===document.getElementById('overlay')) closeModal();
+}
+
+function editNote(id){ openModal(id); }
+
+function selectColor(color,el){
+  selectedColor=color;
+  document.querySelectorAll('.color-dot').forEach(function(d){d.classList.remove('selected');});
+  if(el) el.classList.add('selected');
+}
+
+function selectTag(tag,el){
+  if(selectedTag===tag){ selectedTag=null; if(el) el.classList.remove('selected'); }
+  else {
+    selectedTag=tag;
+    document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');});
+    if(el) el.classList.add('selected');
+  }
+}
+
+function saveNote(){
+  var title=document.getElementById('noteTitle').value.trim();
+  var body=document.getElementById('noteBody').value.trim();
+  if(!title&&!body){ showToast('Please write something first! 🌸'); return; }
+  if(editingId){
+    var idx=notes.findIndex(function(n){return n.id===editingId;});
+    notes[idx]=Object.assign({},notes[idx],{title:title,body:body,color:selectedColor,tag:selectedTag,pinned:document.getElementById('pinCheck').checked});
+    showToast('Note updated! 🌷');
+  } else {
+    notes.unshift({id:Date.now().toString(),title:title,body:body,color:selectedColor,tag:selectedTag,pinned:document.getElementById('pinCheck').checked,date:Date.now()});
+    showToast('Note saved! 💖');
+  }
+  save(); closeModal(); renderNotes();
+}
+
+function deleteNote(id){
+  if(!confirm('Delete this note? \uD83C\uDF19')) return;
+  notes=notes.filter(function(n){return n.id!==id;});
+  save(); renderNotes(); showToast('Note deleted 🌙');
+}
+
+function togglePin(id){
+  var n=notes.find(function(x){return x.id===id;});
+  n.pinned=!n.pinned;
+  save(); renderNotes();
+  showToast(n.pinned?'Pinned! 📌':'Unpinned 📍');
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2400);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeModal();
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter') saveNote();
+});
+
+if(!notes.length){
+  notes=[
+    {id:'1',title:'Welcome to Petal Notes \uD83C\uDF38',body:'Your cozy little space to jot down thoughts, ideas, and dreams! Click the New Note button to get started.',color:'pink',tag:'personal',pinned:true,date:Date.now()},
+    {id:'2',title:'Features \uD83D\uDCA1',body:'Color-coded notes, tags & filters, pin your favorites, search everything, and press Ctrl+Enter to save quickly!',color:'lavender',tag:'ideas',pinned:false,date:Date.now()-300000},
+    {id:'3',title:'Study goals \uD83D\uDCDA',body:'Review notes every evening and practice problems for 30 mins daily. You got this!',color:'mint',tag:'study',pinned:false,date:Date.now()-600000},
+  ];
+  save();
+}
+renderNotes();
+</script>
+</body>
+</html>
