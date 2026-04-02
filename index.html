@@ -13,7 +13,7 @@
     --lavender: #C9B8FF;
     --lavender-light: #E8E0FF;
     --mint: #B5EAD7;
-    --peach: #FFD7BA;  
+    --peach: #FFD7BA;
     --yellow: #FFF4A3;
     --sky: #B8E4FF;
     --white: #FFFCFE;
@@ -141,15 +141,25 @@
     transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.1);
   }
   .action-btn:hover { transform:scale(1.2); background:white; }
-  .del-btn:hover svg { stroke: #FF8FAB; }
-  .pin-btn:hover svg { stroke: #FF8FAB; fill: #FF8FAB; }
   .pin-indicator { position:absolute; top:14px; right:16px; font-size:16px; opacity:0.7; }
+
+  /* Card indicators for attachments/voice */
+  .note-indicators {
+    display:flex; gap:5px; margin-top:8px; flex-wrap:wrap;
+  }
+  .note-indicator {
+    font-size:11px; padding:2px 8px; border-radius:50px;
+    background:rgba(255,255,255,0.65); font-weight:700; color:var(--text);
+  }
+
   .color-pink { background:linear-gradient(135deg,#FFD6E7,#FFF0F5); }
   .color-lavender { background:linear-gradient(135deg,#E8E0FF,#F5F0FF); }
   .color-mint { background:linear-gradient(135deg,#C8F5E5,#E8FAF3); }
   .color-peach { background:linear-gradient(135deg,#FFE5CC,#FFF5EA); }
   .color-yellow { background:linear-gradient(135deg,#FFF5CC,#FFFBEA); }
   .color-sky { background:linear-gradient(135deg,#CCE8FF,#EAF5FF); }
+
+  /* OVERLAY & MODAL */
   .overlay {
     position:fixed; inset:0; background:rgba(180,140,200,0.3);
     backdrop-filter:blur(8px); z-index:100;
@@ -159,11 +169,11 @@
   .overlay.open { opacity:1; pointer-events:all; }
   .modal {
     background:white; border-radius:28px; padding:30px;
-    width:100%; max-width:520px;
+    width:100%; max-width:560px;
     box-shadow:0 20px 60px rgba(200,140,200,0.35);
     transform:scale(0.85) translateY(30px);
     transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    max-height:90vh; overflow-y:auto;
+    max-height:92vh; overflow-y:auto;
   }
   .overlay.open .modal { transform:scale(1) translateY(0); }
   .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
@@ -172,6 +182,7 @@
     background:linear-gradient(135deg,var(--pink),var(--lavender));
     -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
   }
+  .modal-header-btns { display:flex; gap:8px; align-items:center; }
   .close-btn {
     width:36px; height:36px; border:none; border-radius:50%;
     background:var(--pink-pale); color:var(--pink); font-size:18px;
@@ -179,6 +190,32 @@
     display:flex; align-items:center; justify-content:center; font-weight:bold;
   }
   .close-btn:hover { background:var(--pink); color:white; transform:rotate(90deg); }
+  .edit-mode-btn {
+    padding:7px 16px; border:none; border-radius:50px;
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    color:white; font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .edit-mode-btn:hover { transform:scale(1.05); }
+
+  /* VIEW MODE */
+  .view-section { margin-bottom:18px; }
+  .view-title { font-size:22px; font-weight:800; color:var(--text); margin-bottom:8px; word-break:break-word; }
+  .view-body { font-size:15px; color:var(--text); opacity:0.85; line-height:1.7; word-break:break-word; white-space:pre-wrap; }
+  .view-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+  .view-tag {
+    padding:4px 14px; border-radius:50px; font-size:12px; font-weight:800;
+    background:linear-gradient(135deg,var(--pink-pale),var(--lavender-light)); color:var(--text);
+  }
+  .view-date { font-size:12px; color:var(--text-light); font-weight:600; }
+  .view-divider { border:none; border-top:2px dashed #F0EAF8; margin:16px 0; }
+
+  /* EDIT FORM */
+  .edit-form { display:none; }
+  .edit-form.active { display:block; }
+  .view-content { display:none; }
+  .view-content.active { display:block; }
+
   .modal input[type="text"], .modal textarea {
     width:100%; border:2.5px solid #F0EAF8; border-radius:16px;
     padding:13px 16px; font-family:'Nunito',sans-serif; font-size:15px;
@@ -188,7 +225,7 @@
   .modal input[type="text"]:focus, .modal textarea:focus {
     border-color:var(--pink-light); box-shadow:0 0 0 4px rgba(255,179,198,0.2);
   }
-  .modal textarea { height:140px; }
+  .modal textarea { height:130px; }
   .modal label {
     font-size:12px; font-weight:800; text-transform:uppercase;
     letter-spacing:1px; color:var(--text-light); display:block; margin-bottom:6px;
@@ -225,6 +262,102 @@
     box-shadow:0 4px 20px rgba(200,140,200,0.4);
   }
   .save-btn:hover { transform:scale(1.03); box-shadow:0 8px 28px rgba(200,140,200,0.5); }
+
+  /* FILE ATTACHMENTS */
+  .attach-section { margin-bottom:14px; }
+  .attach-label-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .file-input-btn {
+    padding:8px 16px; border:2px dashed var(--pink-light); border-radius:50px;
+    background:var(--pink-pale); color:var(--pink); font-family:'Nunito',sans-serif;
+    font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .file-input-btn:hover { background:var(--pink); color:white; border-style:solid; }
+  #fileInput { display:none; }
+  .files-preview { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+  .file-thumb {
+    position:relative; border-radius:14px; overflow:hidden;
+    box-shadow:0 3px 10px var(--shadow); background:white;
+    border:2px solid #F0EAF8;
+  }
+  .file-thumb img {
+    width:80px; height:80px; object-fit:cover; display:block;
+  }
+  .file-thumb .pdf-icon {
+    width:80px; height:80px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:4px;
+    font-size:28px; background:linear-gradient(135deg,#FFE5CC,#FFF5EA);
+  }
+  .file-thumb .pdf-icon span { font-size:10px; font-weight:800; color:var(--text-light); }
+  .file-remove {
+    position:absolute; top:3px; right:3px; width:20px; height:20px;
+    background:rgba(255,255,255,0.9); border:none; border-radius:50%;
+    font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    color:var(--pink); font-weight:bold; box-shadow:0 1px 4px rgba(0,0,0,0.15);
+    transition:all 0.2s;
+  }
+  .file-remove:hover { background:var(--pink); color:white; transform:scale(1.1); }
+  .file-name {
+    font-size:9px; font-weight:700; color:var(--text-light);
+    padding:3px 5px; text-align:center; max-width:80px;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .file-open-btn {
+    display:block; width:100%; padding:4px; background:var(--pink-pale);
+    border:none; color:var(--pink); font-family:'Nunito',sans-serif;
+    font-size:10px; font-weight:700; cursor:pointer; text-align:center;
+  }
+  .file-open-btn:hover { background:var(--pink); color:white; }
+
+  /* VOICE NOTES */
+  .voice-section { margin-bottom:14px; }
+  .voice-controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+  .rec-btn {
+    padding:10px 20px; border:none; border-radius:50px;
+    font-family:'Nunito',sans-serif; font-size:13px; font-weight:800;
+    cursor:pointer; transition:all 0.3s; display:flex; align-items:center; gap:7px;
+  }
+  .rec-btn.start {
+    background:linear-gradient(135deg,var(--pink),var(--lavender));
+    color:white; box-shadow:0 3px 14px rgba(200,140,200,0.35);
+  }
+  .rec-btn.stop {
+    background:linear-gradient(135deg,#ff6b6b,#ff8e53);
+    color:white; box-shadow:0 3px 14px rgba(255,100,100,0.35);
+    animation:recPulse 1s ease-in-out infinite;
+  }
+  @keyframes recPulse {
+    0%,100% { box-shadow:0 3px 14px rgba(255,100,100,0.35); }
+    50% { box-shadow:0 3px 22px rgba(255,100,100,0.6); transform:scale(1.03); }
+  }
+  .rec-btn:hover { transform:scale(1.05); }
+  .rec-timer { font-size:13px; font-weight:700; color:var(--text-light); }
+  .rec-dot { width:10px; height:10px; border-radius:50%; background:#ff4444; display:inline-block; animation:blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .voice-list { display:flex; flex-direction:column; gap:8px; }
+  .voice-item {
+    display:flex; align-items:center; gap:10px; padding:10px 14px;
+    background:linear-gradient(135deg,var(--pink-pale),var(--lavender-light));
+    border-radius:16px; border:1.5px solid #F0EAF8;
+  }
+  .voice-item audio { flex:1; height:36px; min-width:0; }
+  audio { accent-color:var(--pink); }
+  .voice-duration {
+    font-size:12px; font-weight:700; color:var(--text-light); white-space:nowrap;
+  }
+  .voice-delete {
+    width:28px; height:28px; border:none; border-radius:50%;
+    background:rgba(255,143,171,0.15); color:var(--pink);
+    cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s; flex-shrink:0;
+  }
+  .voice-delete:hover { background:var(--pink); color:white; transform:scale(1.1); }
+  .voice-label { font-size:12px; font-weight:700; color:var(--text-light); white-space:nowrap; }
+
+  /* VIEW MODE attachments/audio */
+  .view-files { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+  .view-voice-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+
   .empty-state { text-align:center; padding:60px 20px; grid-column:1/-1; }
   .empty-emoji { font-size:64px; animation:bounce 2s ease-in-out infinite; }
   @keyframes bounce { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
@@ -241,6 +374,13 @@
   ::-webkit-scrollbar { width:6px; }
   ::-webkit-scrollbar-track { background:transparent; }
   ::-webkit-scrollbar-thumb { background:var(--pink-light); border-radius:10px; }
+
+  .section-header {
+    font-size:12px; font-weight:800; text-transform:uppercase;
+    letter-spacing:1px; color:var(--text-light); margin-bottom:8px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .no-content { font-size:13px; color:var(--text-light); font-style:italic; }
 </style>
 </head>
 <body>
@@ -251,245 +391,658 @@
 
 <div class="app">
   <header>
-    <div class="logo">&#10035; Petal Notes</div>
-    <div class="subtitle">your little cozy corner &#127800;</div>
+    <div class="logo">✿ Petal Notes</div>
+    <div class="subtitle">your little cozy corner 🌸</div>
   </header>
   <div class="stats-bar" id="statsBar"></div>
   <div class="toolbar">
     <div class="search-wrap">
-      <span class="search-icon">&#128269;</span>
+      <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="Search your notes..." oninput="renderNotes()">
     </div>
     <div class="filter-btns">
-      <button class="filter-btn active" onclick="setFilter('all',this)">&#127800; All</button>
-      <button class="filter-btn" onclick="setFilter('pinned',this)">&#128204; Pinned</button>
-      <button class="filter-btn" onclick="setFilter('personal',this)">&#129419; Personal</button>
-      <button class="filter-btn" onclick="setFilter('work',this)">&#128188; Work</button>
-      <button class="filter-btn" onclick="setFilter('ideas',this)">&#128161; Ideas</button>
-      <button class="filter-btn" onclick="setFilter('study',this)">&#128218; Study</button>
+      <button class="filter-btn active" onclick="setFilter('all',this)">🌸 All</button>
+      <button class="filter-btn" onclick="setFilter('pinned',this)">📌 Pinned</button>
+      <button class="filter-btn" onclick="setFilter('personal',this)">🦋 Personal</button>
+      <button class="filter-btn" onclick="setFilter('work',this)">💼 Work</button>
+      <button class="filter-btn" onclick="setFilter('ideas',this)">💡 Ideas</button>
+      <button class="filter-btn" onclick="setFilter('study',this)">📚 Study</button>
     </div>
-    <button class="add-btn" onclick="openModal()">&#10024; New Note</button>
+    <button class="add-btn" onclick="openModal()">✨ New Note</button>
   </div>
   <div class="notes-grid" id="notesGrid"></div>
 </div>
 
+<!-- MODAL -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="modal" id="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modalTitle">New Note &#10024;</div>
-      <button class="close-btn" onclick="closeModal()">&#215;</button>
+      <div class="modal-title" id="modalTitle">New Note ✨</div>
+      <div class="modal-header-btns">
+        <button class="edit-mode-btn" id="editModeBtn" onclick="switchToEdit()" style="display:none">✏️ Edit</button>
+        <button class="close-btn" onclick="closeModal()">×</button>
+      </div>
     </div>
-    <label>Title</label>
-    <input type="text" id="noteTitle" placeholder="Give it a cute title... &#127799;">
-    <label>Your thoughts</label>
-    <textarea id="noteBody" placeholder="Write anything your heart desires... &#9729;"></textarea>
-    <label>Pick a color &#127912;</label>
-    <div class="color-picker">
-      <div class="color-dot dot-pink selected" data-color="pink" onclick="selectColor('pink',this)"></div>
-      <div class="color-dot dot-lavender" data-color="lavender" onclick="selectColor('lavender',this)"></div>
-      <div class="color-dot dot-mint" data-color="mint" onclick="selectColor('mint',this)"></div>
-      <div class="color-dot dot-peach" data-color="peach" onclick="selectColor('peach',this)"></div>
-      <div class="color-dot dot-yellow" data-color="yellow" onclick="selectColor('yellow',this)"></div>
-      <div class="color-dot dot-sky" data-color="sky" onclick="selectColor('sky',this)"></div>
+
+    <!-- VIEW MODE -->
+    <div class="view-content" id="viewContent">
+      <div class="view-meta">
+        <span class="view-tag" id="viewTag" style="display:none"></span>
+        <span class="view-date" id="viewDate"></span>
+        <span id="viewPinned" style="display:none">📌 Pinned</span>
+      </div>
+      <div class="view-section">
+        <div class="view-title" id="viewTitle"></div>
+        <div class="view-body" id="viewBody"></div>
+      </div>
+      <hr class="view-divider" id="viewDividerFiles" style="display:none">
+      <div id="viewFilesSection" style="display:none">
+        <div class="section-header">📎 Attachments</div>
+        <div class="view-files" id="viewFilesList"></div>
+      </div>
+      <hr class="view-divider" id="viewDividerAudio" style="display:none">
+      <div id="viewAudioSection" style="display:none">
+        <div class="section-header">🎤 Voice Notes</div>
+        <div class="view-voice-list" id="viewVoiceList"></div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;">
+        <button class="save-btn" style="background:linear-gradient(135deg,var(--pink),var(--lavender))" onclick="switchToEdit()">✏️ Edit Note</button>
+        <button class="save-btn" style="background:linear-gradient(135deg,#ff8888,#ffaa88);flex:0 0 auto;width:auto;padding:14px 20px" onclick="deleteCurrentNote()">🗑 Delete</button>
+      </div>
     </div>
-    <label>Tag it &#127991;</label>
-    <div class="tag-select">
-      <button class="tag-option" data-tag="personal" onclick="selectTag('personal',this)">&#129419; Personal</button>
-      <button class="tag-option" data-tag="work" onclick="selectTag('work',this)">&#128188; Work</button>
-      <button class="tag-option" data-tag="ideas" onclick="selectTag('ideas',this)">&#128161; Ideas</button>
-      <button class="tag-option" data-tag="study" onclick="selectTag('study',this)">&#128218; Study</button>
-      <button class="tag-option" data-tag="misc" onclick="selectTag('misc',this)">&#127752; Misc</button>
+
+    <!-- EDIT MODE -->
+    <div class="edit-form" id="editForm">
+      <label>Title</label>
+      <input type="text" id="noteTitle" placeholder="Give it a cute title... 🌹">
+      <label>Your thoughts</label>
+      <textarea id="noteBody" placeholder="Write anything your heart desires... ☁️"></textarea>
+      <label>Pick a color 🎨</label>
+      <div class="color-picker">
+        <div class="color-dot dot-pink selected" data-color="pink" onclick="selectColor('pink',this)"></div>
+        <div class="color-dot dot-lavender" data-color="lavender" onclick="selectColor('lavender',this)"></div>
+        <div class="color-dot dot-mint" data-color="mint" onclick="selectColor('mint',this)"></div>
+        <div class="color-dot dot-peach" data-color="peach" onclick="selectColor('peach',this)"></div>
+        <div class="color-dot dot-yellow" data-color="yellow" onclick="selectColor('yellow',this)"></div>
+        <div class="color-dot dot-sky" data-color="sky" onclick="selectColor('sky',this)"></div>
+      </div>
+      <label>Tag it 🏷️</label>
+      <div class="tag-select">
+        <button class="tag-option" data-tag="personal" onclick="selectTag('personal',this)">🦋 Personal</button>
+        <button class="tag-option" data-tag="work" onclick="selectTag('work',this)">💼 Work</button>
+        <button class="tag-option" data-tag="ideas" onclick="selectTag('ideas',this)">💡 Ideas</button>
+        <button class="tag-option" data-tag="study" onclick="selectTag('study',this)">📚 Study</button>
+        <button class="tag-option" data-tag="misc" onclick="selectTag('misc',this)">🌈 Misc</button>
+      </div>
+      <div class="modal-row">
+        <input type="checkbox" id="pinCheck">
+        <span>📌 Pin this note to top</span>
+      </div>
+
+      <!-- FILE ATTACHMENTS -->
+      <div class="attach-section">
+        <div class="attach-label-row">
+          <label style="margin-bottom:0">📎 Attachments</label>
+          <label class="file-input-btn" for="fileInput">+ Add File</label>
+        </div>
+        <input type="file" id="fileInput" accept="image/*,.pdf" multiple onchange="handleFiles(event)">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:6px;">Images & PDFs • Max 10MB each • Up to 10 files</div>
+        <div class="files-preview" id="filesPreview"></div>
+      </div>
+
+      <!-- VOICE NOTES -->
+      <div class="voice-section">
+        <label>🎤 Voice Notes</label>
+        <div class="voice-controls">
+          <button class="rec-btn start" id="recBtn" onclick="toggleRecording()">🎙️ Start Recording</button>
+          <span class="rec-timer" id="recTimer" style="display:none"><span class="rec-dot"></span> <span id="recTime">0:00</span></span>
+        </div>
+        <div class="voice-list" id="voiceList"></div>
+      </div>
+
+      <button class="save-btn" onclick="saveNote()">Save Note 💖</button>
     </div>
-    <div class="modal-row">
-      <input type="checkbox" id="pinCheck">
-      <span>&#128204; Pin this note to top</span>
-    </div>
-    <button class="save-btn" onclick="saveNote()">Save Note &#128150;</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-var notes = JSON.parse(localStorage.getItem('petalNotes') || '[]');
+// ─── IndexedDB Setup ───────────────────────────────────────────────────────
+var DB_NAME = 'PetalNotesDB';
+var DB_VERSION = 1;
+var STORE_NAME = 'notes';
+var db = null;
+
+function openDB() {
+  return new Promise(function(resolve, reject) {
+    var req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = function(e) {
+      var d = e.target.result;
+      if (!d.objectStoreNames.contains(STORE_NAME)) {
+        d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = function(e) { db = e.target.result; resolve(db); };
+    req.onerror = function(e) { reject(e); };
+  });
+}
+
+function dbGetAll() {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(STORE_NAME, 'readonly');
+    var store = tx.objectStore(STORE_NAME);
+    var req = store.getAll();
+    req.onsuccess = function() { resolve(req.result || []); };
+    req.onerror = reject;
+  });
+}
+
+function dbPut(note) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(STORE_NAME, 'readwrite');
+    var store = tx.objectStore(STORE_NAME);
+    var req = store.put(note);
+    req.onsuccess = resolve;
+    req.onerror = reject;
+  });
+}
+
+function dbDelete(id) {
+  return new Promise(function(resolve, reject) {
+    var tx = db.transaction(STORE_NAME, 'readwrite');
+    var store = tx.objectStore(STORE_NAME);
+    var req = store.delete(id);
+    req.onsuccess = resolve;
+    req.onerror = reject;
+  });
+}
+
+// ─── Migration from localStorage ──────────────────────────────────────────
+async function migrateFromLocalStorage() {
+  var old = localStorage.getItem('petalNotes');
+  if (!old) return;
+  try {
+    var oldNotes = JSON.parse(old);
+    for (var n of oldNotes) {
+      var migrated = Object.assign({ files: [], audio: [] }, n);
+      await dbPut(migrated);
+    }
+    localStorage.removeItem('petalNotes');
+    showToast('Your notes were migrated safely! 🌸');
+  } catch(e) { console.error('Migration failed', e); }
+}
+
+// ─── App State ─────────────────────────────────────────────────────────────
+var notes = [];
 var currentFilter = 'all';
 var editingId = null;
+var isViewMode = false;
 var selectedColor = 'pink';
 var selectedTag = null;
+var pendingFiles = [];   // { name, type, blob, url }
+var pendingAudio = [];   // { blob, url, duration }
+var mediaRecorder = null;
+var audioChunks = [];
+var isRecording = false;
+var recTimerInterval = null;
+var recSeconds = 0;
 
-var emojis = ['*','@','~','!','+','o','x','^'];
-var emojisFull = ['\u273F','\u1F338','\u2B50','\u1F4AB','\u1F337','\u1F98B','\u2728','\u1F33A','\u1F495','\u1F380','\u1F36C','\u1F308'];
+// ─── Sparkles ──────────────────────────────────────────────────────────────
 var sc = document.getElementById('sparkles');
-var sparkEmojis = ['\u273F','\u2728','\u1F338','\u2B50','\u1F337','\u1F98B','\u1F33A','\u1F495','\u1F380'];
-for(var i=0;i<12;i++){
-  var s=document.createElement('div');
-  s.className='sparkle';
-  s.textContent=sparkEmojis[Math.floor(Math.random()*sparkEmojis.length)];
-  s.style.left=(Math.random()*100)+'vw';
-  s.style.animationDuration=(12+Math.random()*15)+'s';
-  s.style.animationDelay=(Math.random()*15)+'s';
-  s.style.fontSize=(14+Math.random()*14)+'px';
+var sparkEmojis = ['✿','✨','🌸','⭐','🌷','🦋','🌺','💕','🎀'];
+for (var i = 0; i < 12; i++) {
+  var s = document.createElement('div');
+  s.className = 'sparkle';
+  s.textContent = sparkEmojis[Math.floor(Math.random() * sparkEmojis.length)];
+  s.style.left = (Math.random() * 100) + 'vw';
+  s.style.animationDuration = (12 + Math.random() * 15) + 's';
+  s.style.animationDelay = (Math.random() * 15) + 's';
+  s.style.fontSize = (14 + Math.random() * 14) + 'px';
   sc.appendChild(s);
 }
 
-function save(){ localStorage.setItem('petalNotes',JSON.stringify(notes)); }
-
-function tagEmoji(tag){
-  var m={personal:'\u1F98B',work:'\u1F4BC',ideas:'\u1F4A1',study:'\u1F4DA',misc:'\u1F308'};
-  return m[tag]||'';
+// ─── Helpers ───────────────────────────────────────────────────────────────
+function tagEmoji(tag) {
+  return { personal:'🦋', work:'💼', ideas:'💡', study:'📚', misc:'🌈' }[tag] || '';
+}
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function formatDate(ts) {
+  return new Date(ts).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function formatDuration(sec) {
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s;
 }
 
-function escHtml(s){
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function formatDate(ts){
-  var d=new Date(ts);
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
-
-function renderNotes(){
-  var grid=document.getElementById('notesGrid');
-  var q=document.getElementById('searchInput').value.toLowerCase();
-  var filtered=notes.filter(function(n){
-    var mf=currentFilter==='all'||(currentFilter==='pinned'&&n.pinned)||n.tag===currentFilter;
-    var ms=!q||n.title.toLowerCase().includes(q)||n.body.toLowerCase().includes(q);
-    return mf&&ms;
+// ─── Render Notes ──────────────────────────────────────────────────────────
+function renderNotes() {
+  var grid = document.getElementById('notesGrid');
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var filtered = notes.filter(function(n) {
+    var mf = currentFilter === 'all' || (currentFilter === 'pinned' && n.pinned) || n.tag === currentFilter;
+    var ms = !q || (n.title||'').toLowerCase().includes(q) || (n.body||'').toLowerCase().includes(q);
+    return mf && ms;
   });
-  filtered.sort(function(a,b){return(b.pinned?1:0)-(a.pinned?1:0);});
-  if(!filtered.length){
-    grid.innerHTML='<div class="empty-state"><div class="empty-emoji">\u1F338</div><div class="empty-text">No notes here yet~<br>Add something cute! \u2728</div></div>';
+  filtered.sort(function(a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0); });
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-emoji">🌸</div><div class="empty-text">No notes here yet~<br>Add something cute! ✨</div></div>';
     updateStats(); return;
   }
-  grid.innerHTML=filtered.map(function(n,i){
-    return '<div class="note-card color-'+n.color+'" style="animation-delay:'+(i*0.06)+'s" onclick="editNote(\''+n.id+'\')">'
-      +(n.pinned?'<div class="pin-indicator"><svg width="14" height="14" viewBox="0 0 24 24" fill="#FF8FAB" xmlns="http://www.w3.org/2000/svg"><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/><line x1="12" y1="17" x2="12" y2="22" stroke="#FF8FAB" stroke-width="2"/></svg></div>':'')
-      +(n.tag?'<div class="note-tag">'+tagEmoji(n.tag)+' '+n.tag+'</div>':'')
-      +'<div class="note-title">'+(escHtml(n.title)||'Untitled \u2728')+'</div>'
-      +'<div class="note-body">'+escHtml(n.body)+'</div>'
-      +'<div class="note-footer">'
-      +'<span class="note-date">'+formatDate(n.date)+'</span>'
-      +'<div class="note-actions" onclick="event.stopPropagation()">'
-      +'<button class="action-btn pin-btn" title="'+(n.pinned?'Unpin':'Pin')+'" onclick="togglePin(\''+n.id+'\')">'+(n.pinned?'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"#FF8FAB\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z\"/></svg>':'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8B7BA0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"22\"/><path d=\"M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z\"/></svg>')+'</button>'
-      +'<button class="action-btn del-btn" title="Delete" onclick="deleteNote(\''+n.id+'\')">'+'<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8B7BA0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" xmlns=\"http://www.w3.org/2000/svg\"><polyline points=\"3 6 5 6 21 6\"/><path d=\"M19 6l-1 14H6L5 6\"/><path d=\"M10 11v6\"/><path d=\"M14 11v6\"/><path d=\"M9 6V4h6v2\"/></svg>'+'</button>'
-      +'</div></div></div>';
+
+  grid.innerHTML = filtered.map(function(n, i) {
+    var hasFiles = n.files && n.files.length > 0;
+    var hasAudio = n.audio && n.audio.length > 0;
+    var indicators = '';
+    if (hasFiles) indicators += '<span class="note-indicator">📎 ' + n.files.length + '</span>';
+    if (hasAudio) indicators += '<span class="note-indicator">🎤 ' + n.audio.length + '</span>';
+
+    return '<div class="note-card color-' + n.color + '" style="animation-delay:' + (i * 0.06) + 's" onclick="openViewModal(\'' + n.id + '\')">'
+      + (n.pinned ? '<div class="pin-indicator"><svg width="14" height="14" viewBox="0 0 24 24" fill="#FF8FAB" xmlns="http://www.w3.org/2000/svg"><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/><line x1="12" y1="17" x2="12" y2="22" stroke="#FF8FAB" stroke-width="2"/></svg></div>' : '')
+      + (n.tag ? '<div class="note-tag">' + tagEmoji(n.tag) + ' ' + n.tag + '</div>' : '')
+      + '<div class="note-title">' + (escHtml(n.title) || 'Untitled ✨') + '</div>'
+      + '<div class="note-body">' + escHtml(n.body) + '</div>'
+      + (indicators ? '<div class="note-indicators">' + indicators + '</div>' : '')
+      + '<div class="note-footer">'
+      + '<span class="note-date">' + formatDate(n.date) + '</span>'
+      + '<div class="note-actions" onclick="event.stopPropagation()">'
+      + '<button class="action-btn pin-btn" title="' + (n.pinned ? 'Unpin' : 'Pin') + '" onclick="togglePin(\'' + n.id + '\')">'
+      + (n.pinned
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="#FF8FAB" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7BA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>')
+      + '</button>'
+      + '<button class="action-btn del-btn" title="Delete" onclick="deleteNote(\'' + n.id + '\')">'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B7BA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>'
+      + '</button>'
+      + '</div></div></div>';
   }).join('');
   updateStats();
 }
 
-function updateStats(){
-  var pinned=notes.filter(function(n){return n.pinned;}).length;
-  document.getElementById('statsBar').innerHTML=
-    '<div class="stat-pill"><span>\u1F4DD</span>'+notes.length+' notes</div>'
-    +'<div class="stat-pill"><span>\u1F4CC</span>'+pinned+' pinned</div>';
+function updateStats() {
+  var pinned = notes.filter(function(n) { return n.pinned; }).length;
+  document.getElementById('statsBar').innerHTML =
+    '<div class="stat-pill"><span>📝</span>' + notes.length + ' notes</div>'
+    + '<div class="stat-pill"><span>📌</span>' + pinned + ' pinned</div>';
 }
 
-function setFilter(f,btn){
-  currentFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');});
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   renderNotes();
 }
 
-function openModal(id){
-  editingId=id||null;
-  var overlay=document.getElementById('overlay');
-  if(id){
-    var n=notes.find(function(x){return x.id===id;});
-    document.getElementById('modalTitle').textContent='Edit Note \u1F337';
-    document.getElementById('noteTitle').value=n.title;
-    document.getElementById('noteBody').value=n.body;
-    document.getElementById('pinCheck').checked=n.pinned;
-    selectColor(n.color,document.querySelector('.dot-'+n.color));
-    if(n.tag) selectTag(n.tag,document.querySelector('[data-tag="'+n.tag+'"]'));
-    else{ selectedTag=null; document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');}); }
-  } else {
-    document.getElementById('modalTitle').textContent='New Note \u2728';
-    document.getElementById('noteTitle').value='';
-    document.getElementById('noteBody').value='';
-    document.getElementById('pinCheck').checked=false;
-    selectColor('pink',document.querySelector('.dot-pink'));
-    selectedTag=null;
-    document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');});
-  }
-  overlay.classList.add('open');
-  setTimeout(function(){document.getElementById('noteTitle').focus();},300);
+// ─── Modal Open/Close ──────────────────────────────────────────────────────
+function openModal() {
+  editingId = null;
+  isViewMode = false;
+  document.getElementById('modalTitle').textContent = 'New Note ✨';
+  document.getElementById('editModeBtn').style.display = 'none';
+  showEditForm();
+  resetEditForm();
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(function() { document.getElementById('noteTitle').focus(); }, 300);
 }
 
-function closeModal(){
+function openViewModal(id) {
+  var n = notes.find(function(x) { return x.id === id; });
+  if (!n) return;
+  editingId = id;
+  isViewMode = true;
+  document.getElementById('modalTitle').textContent = '🌸 Note';
+  document.getElementById('editModeBtn').style.display = 'none';
+  showViewContent(n);
+  document.getElementById('overlay').classList.add('open');
+}
+
+function switchToEdit() {
+  if (!editingId) return;
+  var n = notes.find(function(x) { return x.id === editingId; });
+  if (!n) return;
+  isViewMode = false;
+  document.getElementById('modalTitle').textContent = 'Edit Note 🌷';
+  document.getElementById('editModeBtn').style.display = 'none';
+  showEditForm();
+  populateEditForm(n);
+}
+
+function showViewContent(n) {
+  document.getElementById('viewContent').classList.add('active');
+  document.getElementById('editForm').classList.remove('active');
+
+  document.getElementById('viewTitle').textContent = n.title || 'Untitled ✨';
+  document.getElementById('viewBody').textContent = n.body || '';
+  document.getElementById('viewDate').textContent = formatDate(n.date);
+
+  var tagEl = document.getElementById('viewTag');
+  if (n.tag) { tagEl.textContent = tagEmoji(n.tag) + ' ' + n.tag; tagEl.style.display = ''; }
+  else { tagEl.style.display = 'none'; }
+
+  var pinEl = document.getElementById('viewPinned');
+  pinEl.style.display = n.pinned ? '' : 'none';
+
+  // Files
+  var filesSection = document.getElementById('viewFilesSection');
+  var filesDivider = document.getElementById('viewDividerFiles');
+  var filesList = document.getElementById('viewFilesList');
+  if (n.files && n.files.length) {
+    filesSection.style.display = ''; filesDivider.style.display = '';
+    filesList.innerHTML = n.files.map(function(f, fi) {
+      if (f.type && f.type.startsWith('image/')) {
+        var url = URL.createObjectURL(new Blob([f.blob], { type: f.type }));
+        return '<div class="file-thumb"><img src="' + url + '" alt="' + escHtml(f.name) + '" onclick="window.open(this.src)" style="cursor:pointer"><div class="file-name">' + escHtml(f.name) + '</div></div>';
+      } else {
+        return '<div class="file-thumb"><div class="pdf-icon">📄<span>PDF</span></div>'
+          + '<button class="file-open-btn" onclick="openPdfBlob(' + fi + ',\'' + escHtml(n.id) + '\')">Open</button>'
+          + '<div class="file-name">' + escHtml(f.name) + '</div></div>';
+      }
+    }).join('');
+  } else { filesSection.style.display = 'none'; filesDivider.style.display = 'none'; }
+
+  // Audio
+  var audioSection = document.getElementById('viewAudioSection');
+  var audioDivider = document.getElementById('viewDividerAudio');
+  var voiceList = document.getElementById('viewVoiceList');
+  if (n.audio && n.audio.length) {
+    audioSection.style.display = ''; audioDivider.style.display = '';
+    voiceList.innerHTML = n.audio.map(function(a, ai) {
+      var url = URL.createObjectURL(new Blob([a.blob], { type: 'audio/webm' }));
+      return '<div class="voice-item">'
+        + '<span class="voice-label">🎤 #' + (ai + 1) + '</span>'
+        + '<audio controls src="' + url + '"></audio>'
+        + '<span class="voice-duration">' + formatDuration(a.duration || 0) + '</span>'
+        + '</div>';
+    }).join('');
+  } else { audioSection.style.display = 'none'; audioDivider.style.display = 'none'; }
+}
+
+function showEditForm() {
+  document.getElementById('editForm').classList.add('active');
+  document.getElementById('viewContent').classList.remove('active');
+}
+
+function resetEditForm() {
+  document.getElementById('noteTitle').value = '';
+  document.getElementById('noteBody').value = '';
+  document.getElementById('pinCheck').checked = false;
+  selectColor('pink', document.querySelector('.dot-pink'));
+  selectedTag = null;
+  document.querySelectorAll('.tag-option').forEach(function(b) { b.classList.remove('selected'); });
+  pendingFiles = [];
+  pendingAudio = [];
+  renderFilesPreview();
+  renderVoiceList();
+}
+
+function populateEditForm(n) {
+  document.getElementById('noteTitle').value = n.title || '';
+  document.getElementById('noteBody').value = n.body || '';
+  document.getElementById('pinCheck').checked = !!n.pinned;
+  selectColor(n.color || 'pink', document.querySelector('.dot-' + (n.color || 'pink')));
+  if (n.tag) selectTag(n.tag, document.querySelector('[data-tag="' + n.tag + '"]'));
+  else { selectedTag = null; document.querySelectorAll('.tag-option').forEach(function(b) { b.classList.remove('selected'); }); }
+
+  // Load existing files into pending
+  pendingFiles = (n.files || []).map(function(f) {
+    return { name: f.name, type: f.type, blob: f.blob, url: URL.createObjectURL(new Blob([f.blob], { type: f.type })) };
+  });
+  pendingAudio = (n.audio || []).map(function(a) {
+    return { blob: a.blob, url: URL.createObjectURL(new Blob([a.blob], { type: 'audio/webm' })), duration: a.duration || 0 };
+  });
+  renderFilesPreview();
+  renderVoiceList();
+}
+
+function closeModal() {
   document.getElementById('overlay').classList.remove('open');
-  editingId=null;
+  if (isRecording) stopRecording();
+  editingId = null;
 }
 
-function handleOverlayClick(e){
-  if(e.target===document.getElementById('overlay')) closeModal();
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
 }
 
-function editNote(id){ openModal(id); }
-
-function selectColor(color,el){
-  selectedColor=color;
-  document.querySelectorAll('.color-dot').forEach(function(d){d.classList.remove('selected');});
-  if(el) el.classList.add('selected');
+// ─── Color / Tag ───────────────────────────────────────────────────────────
+function selectColor(color, el) {
+  selectedColor = color;
+  document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('selected'); });
+  if (el) el.classList.add('selected');
 }
 
-function selectTag(tag,el){
-  if(selectedTag===tag){ selectedTag=null; if(el) el.classList.remove('selected'); }
-  else {
-    selectedTag=tag;
-    document.querySelectorAll('.tag-option').forEach(function(b){b.classList.remove('selected');});
-    if(el) el.classList.add('selected');
+function selectTag(tag, el) {
+  if (selectedTag === tag) {
+    selectedTag = null;
+    if (el) el.classList.remove('selected');
+  } else {
+    selectedTag = tag;
+    document.querySelectorAll('.tag-option').forEach(function(b) { b.classList.remove('selected'); });
+    if (el) el.classList.add('selected');
   }
 }
 
-function saveNote(){
-  var title=document.getElementById('noteTitle').value.trim();
-  var body=document.getElementById('noteBody').value.trim();
-  if(!title&&!body){ showToast('Please write something first! 🌸'); return; }
-  if(editingId){
-    var idx=notes.findIndex(function(n){return n.id===editingId;});
-    notes[idx]=Object.assign({},notes[idx],{title:title,body:body,color:selectedColor,tag:selectedTag,pinned:document.getElementById('pinCheck').checked});
+// ─── File Handling ─────────────────────────────────────────────────────────
+function handleFiles(event) {
+  var files = Array.from(event.target.files);
+  var MAX_SIZE = 10 * 1024 * 1024; // 10MB
+  var MAX_FILES = 10;
+
+  for (var f of files) {
+    if (pendingFiles.length >= MAX_FILES) {
+      showToast('Max 10 files per note! 🌸'); break;
+    }
+    if (f.size > MAX_SIZE) {
+      showToast(f.name + ' is too large! Max 10MB 🌸'); continue;
+    }
+    (function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var ab = e.target.result;
+        pendingFiles.push({ name: file.name, type: file.type, blob: ab, url: URL.createObjectURL(file) });
+        renderFilesPreview();
+      };
+      reader.readAsArrayBuffer(file);
+    })(f);
+  }
+  event.target.value = '';
+}
+
+function renderFilesPreview() {
+  var container = document.getElementById('filesPreview');
+  if (!container) return;
+  if (!pendingFiles.length) { container.innerHTML = ''; return; }
+  container.innerHTML = pendingFiles.map(function(f, i) {
+    var thumb = '';
+    if (f.type && f.type.startsWith('image/')) {
+      thumb = '<img src="' + f.url + '" alt="' + escHtml(f.name) + '">';
+    } else {
+      thumb = '<div class="pdf-icon">📄<span>PDF</span></div>';
+    }
+    return '<div class="file-thumb">' + thumb
+      + '<button class="file-remove" onclick="removeFile(' + i + ')">×</button>'
+      + '<div class="file-name">' + escHtml(f.name) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function removeFile(i) {
+  pendingFiles.splice(i, 1);
+  renderFilesPreview();
+}
+
+function openPdfBlob(fi, noteId) {
+  var n = notes.find(function(x) { return x.id === noteId; });
+  if (!n || !n.files[fi]) return;
+  var f = n.files[fi];
+  var url = URL.createObjectURL(new Blob([f.blob], { type: f.type }));
+  window.open(url);
+}
+
+// ─── Voice Recording ───────────────────────────────────────────────────────
+function toggleRecording() {
+  if (isRecording) stopRecording();
+  else startRecording();
+}
+
+function startRecording() {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = function() {
+      var blob = new Blob(audioChunks, { type: 'audio/webm' });
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        pendingAudio.push({ blob: e.target.result, url: URL.createObjectURL(blob), duration: recSeconds });
+        renderVoiceList();
+      };
+      reader.readAsArrayBuffer(blob);
+      stream.getTracks().forEach(function(t) { t.stop(); });
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    recSeconds = 0;
+    document.getElementById('recBtn').className = 'rec-btn stop';
+    document.getElementById('recBtn').textContent = '⏹ Stop Recording';
+    document.getElementById('recTimer').style.display = 'flex';
+    recTimerInterval = setInterval(function() {
+      recSeconds++;
+      document.getElementById('recTime').textContent = formatDuration(recSeconds);
+    }, 1000);
+  }).catch(function() {
+    showToast('Microphone access denied 🎤');
+  });
+}
+
+function stopRecording() {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    isRecording = false;
+    clearInterval(recTimerInterval);
+    document.getElementById('recBtn').className = 'rec-btn start';
+    document.getElementById('recBtn').innerHTML = '🎙️ Start Recording';
+    document.getElementById('recTimer').style.display = 'none';
+  }
+}
+
+function renderVoiceList() {
+  var list = document.getElementById('voiceList');
+  if (!list) return;
+  if (!pendingAudio.length) { list.innerHTML = ''; return; }
+  list.innerHTML = pendingAudio.map(function(a, i) {
+    return '<div class="voice-item">'
+      + '<span class="voice-label">🎤 #' + (i + 1) + '</span>'
+      + '<audio controls src="' + a.url + '"></audio>'
+      + '<span class="voice-duration">' + formatDuration(a.duration) + '</span>'
+      + '<button class="voice-delete" onclick="removeVoice(' + i + ')" title="Delete">🗑</button>'
+      + '</div>';
+  }).join('');
+}
+
+function removeVoice(i) {
+  pendingAudio.splice(i, 1);
+  renderVoiceList();
+}
+
+// ─── Save Note ─────────────────────────────────────────────────────────────
+async function saveNote() {
+  var title = document.getElementById('noteTitle').value.trim();
+  var body = document.getElementById('noteBody').value.trim();
+  if (!title && !body) { showToast('Please write something first! 🌸'); return; }
+
+  var filesData = pendingFiles.map(function(f) { return { name: f.name, type: f.type, blob: f.blob }; });
+  var audioData = pendingAudio.map(function(a) { return { blob: a.blob, duration: a.duration }; });
+
+  if (editingId) {
+    var idx = notes.findIndex(function(n) { return n.id === editingId; });
+    notes[idx] = Object.assign({}, notes[idx], {
+      title: title, body: body, color: selectedColor, tag: selectedTag,
+      pinned: document.getElementById('pinCheck').checked,
+      files: filesData, audio: audioData
+    });
+    await dbPut(notes[idx]);
     showToast('Note updated! 🌷');
   } else {
-    notes.unshift({id:Date.now().toString(),title:title,body:body,color:selectedColor,tag:selectedTag,pinned:document.getElementById('pinCheck').checked,date:Date.now()});
+    var newNote = {
+      id: Date.now().toString(), title: title, body: body,
+      color: selectedColor, tag: selectedTag,
+      pinned: document.getElementById('pinCheck').checked,
+      date: Date.now(), files: filesData, audio: audioData
+    };
+    notes.unshift(newNote);
+    await dbPut(newNote);
     showToast('Note saved! 💖');
   }
-  save(); closeModal(); renderNotes();
+  closeModal();
+  renderNotes();
 }
 
-function deleteNote(id){
-  if(!confirm('Delete this note? \uD83C\uDF19')) return;
-  notes=notes.filter(function(n){return n.id!==id;});
-  save(); renderNotes(); showToast('Note deleted 🌙');
+// ─── Delete / Pin ──────────────────────────────────────────────────────────
+function deleteCurrentNote() {
+  if (!editingId) return;
+  if (!confirm('Delete this note? 🌙')) return;
+  deleteNoteById(editingId);
+  closeModal();
 }
 
-function togglePin(id){
-  var n=notes.find(function(x){return x.id===id;});
-  n.pinned=!n.pinned;
-  save(); renderNotes();
-  showToast(n.pinned?'Pinned! 📌':'Unpinned 📍');
+async function deleteNote(id) {
+  if (!confirm('Delete this note? 🌙')) return;
+  deleteNoteById(id);
 }
 
-function showToast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2400);
+async function deleteNoteById(id) {
+  notes = notes.filter(function(n) { return n.id !== id; });
+  await dbDelete(id);
+  renderNotes();
+  showToast('Note deleted 🌙');
 }
 
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape') closeModal();
-  if((e.ctrlKey||e.metaKey)&&e.key==='Enter') saveNote();
+async function togglePin(id) {
+  var n = notes.find(function(x) { return x.id === id; });
+  n.pinned = !n.pinned;
+  await dbPut(n);
+  renderNotes();
+  showToast(n.pinned ? 'Pinned! 📌' : 'Unpinned 📍');
+}
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2400);
+}
+
+// ─── Keyboard Shortcuts ────────────────────────────────────────────────────
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    if (document.getElementById('editForm').classList.contains('active')) saveNote();
+  }
 });
 
-if(!notes.length){
-  notes=[
-    {id:'1',title:'Welcome to Petal Notes \uD83C\uDF38',body:'Your cozy little space to jot down thoughts, ideas, and dreams! Click the New Note button to get started.',color:'pink',tag:'personal',pinned:true,date:Date.now()},
-    {id:'2',title:'Features \uD83D\uDCA1',body:'Color-coded notes, tags & filters, pin your favorites, search everything, and press Ctrl+Enter to save quickly!',color:'lavender',tag:'ideas',pinned:false,date:Date.now()-300000},
-    {id:'3',title:'Study goals \uD83D\uDCDA',body:'Review notes every evening and practice problems for 30 mins daily. You got this!',color:'mint',tag:'study',pinned:false,date:Date.now()-600000},
-  ];
-  save();
+// ─── Init ──────────────────────────────────────────────────────────────────
+async function init() {
+  await openDB();
+  await migrateFromLocalStorage();
+  notes = await dbGetAll();
+
+  // Seed default notes if empty
+  if (!notes.length) {
+    var defaults = [
+      { id:'1', title:'Welcome to Petal Notes 🌸', body:'Your cozy little space to jot down thoughts, ideas, and dreams! Click the New Note button to get started.', color:'pink', tag:'personal', pinned:true, date:Date.now(), files:[], audio:[] },
+      { id:'2', title:'Features 💡', body:'Color-coded notes, tags & filters, pin your favorites, search everything, attach images & PDFs, record voice notes, and press Ctrl+Enter to save!', color:'lavender', tag:'ideas', pinned:false, date:Date.now()-300000, files:[], audio:[] },
+      { id:'3', title:'Study goals 📚', body:'Review notes every evening and practice problems for 30 mins daily. You got this!', color:'mint', tag:'study', pinned:false, date:Date.now()-600000, files:[], audio:[] },
+    ];
+    for (var n of defaults) { await dbPut(n); notes.push(n); }
+  }
+  renderNotes();
 }
-renderNotes();
+
+init();
 </script>
 </body>
 </html>
